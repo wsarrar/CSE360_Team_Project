@@ -50,7 +50,7 @@ public class VaccineEntry {
     }public void setType(String type) {
         this.type = type;
     }
-    public void setFirstName(int idNumber) {
+    public void setIdNumber(int idNumber) {
         this.idNumber = idNumber;
     }
 }
