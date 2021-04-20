@@ -211,6 +211,39 @@ public class GUIController {
 		frame.setVisible(true);
 	}
 	
+	visBar.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				panel.remove(layout.getLayoutComponent(BorderLayout.CENTER));
+				ArrayList<String> types = new ArrayList<String>();
+				ArrayList<Integer> nums = new ArrayList<Integer>();
+				
+				Object[][] toSave = getData(table);
+				
+				for (int i = 0; i < toSave.length; i++)
+				{
+					if (types.contains(toSave[i][3]))
+					{
+						nums.set(types.indexOf(toSave[i][3]), nums.get(types.indexOf(toSave[i][3])) + 1);
+					}
+					else
+					{
+						types.add((String) toSave[i][3]);
+						nums.add(1);
+					}
+				}
+			new Bar("# of doses per vaccine type", types, nums);
+			
+			panel.add(Bar.createDemoPanel(), BorderLayout.CENTER);
+			panel.repaint();
+			panel.revalidate();
+			}
+		});
+		
+		frame.setSize(1200,900);
+		frame.setVisible(true);
+	}
     //function for getting data from table
     public Object[][] getData(JTable table) {
 	        DefaultTableModel dtm = (DefaultTableModel) table.getModel();
