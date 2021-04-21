@@ -22,41 +22,43 @@ public class FileController extends GUIController {
 	JFileChooser fileToChoose;
 	
 	public FileController() {
-		
-		// Create the application log for action listeners to refer to it
-		appLog = new JTextArea(5, 40);
-		appLog.setMargin(new Insets(5, 5, 5, 5));
-		JScrollPane appLogScrollPanel = new JScrollPane(appLog);
-		
-		// Create a file chooser
-		fileToChoose = new JFileChooser();
-		// Allows both files and directories to be selected
-		fileToChoose.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		
-		// Creates an open file button to read a .CSV file
-		loadFileButton = new JButton("Open a CSV File..");	// TODO
-		loadFileButton.addActionListener((ActionListener) this); // TODO
-		
-		// Creates a save file button to save a .CSV file
-		saveFileButton = new JButton ("Save CSV File..");	// TODO
-		saveFileButton.addActionListener((ActionListener) this); // TODO
-		
-		// For layout purposes, assign the buttons in a separate panel
-		JPanel fileButtonPanel = new JPanel();
-		fileButtonPanel.add(loadFileButton);
-		fileButtonPanel.add(saveFileButton);
-		
-		// Add the buttons and the 'appLog' to the 'appLogScroolPane' panel.
-		//add(fileButtonPanel, BorderLayout.PAGE_START);
-		//add(appLogScrollPanel, BorderLayout.CENTER);
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setCurrentDirectory(new File(System.getProperty("C:\\Users")));
+		int result = fileChooser.showOpenDialog(fileFrame);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			selectedFile = fileChooser.getSelectedFile();
+			System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+		}
 	}
 	
-  	// Working on it
-	public void actionToPerfrom(ActionEvent appEvent) {
-		// Handles the action when the open button is clicked
-		if(appEvent.getSource() == loadFileButton) {
-			//int valueToReturn = fileToChoose.showOpenDialog(FileController.this);
-		}
+	public void createScrollPaneWindow() {
+		// Display the window.
+		// The following creates the text area, generates the scroll pane's client, 
+		// and adds the scroll pane to a container 
+		  
+		//In a container that uses a BorderLayout:
+		textAreaForFile = new JTextArea(5, 30);
+
+		fileScrollPane = new JScrollPane(textAreaForFile);
+		//setPreferredSize(new Dimension(450, 110));
+		//add(scrollPane, BorderLayout.CENTER);
+		
+		// Create and set up a window to allow the user and admin to scroll up and down and side to side
+		// to view the vaccination data from the CSV file
+        fileFrame.setSize(200, 200);
+        fileFrame.setVisible(true);
+        fileFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+ 
+        // set flow layout for the frame
+        fileFrame.getContentPane().setLayout(new FlowLayout());
+ 
+        //textArea = new JTextArea(50, 50);
+        //scrollableTextArea = new JScrollPane(textArea);
+ 
+        //scrollableTextArea.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        //scrollableTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+ 
+        //frame.getContentPane().add(scrollableTextArea);
 	}
 	
 	/*
