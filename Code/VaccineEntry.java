@@ -53,4 +53,9 @@ public class VaccineEntry {
     public void setIdNumber(int idNumber) {
         this.idNumber = idNumber;
     }
+    
+    //print the data from the entry
+    public String toString() {
+       return "ID: "+this.idNumber+"\nFirst Name: "+this.firstName+"\nLastName: "+this.lastName+"\nType: "+this.type+"\nDate: "+this.date+"\nLocation: "+this.location+"\n\n";
+    }
 }
