@@ -1,73 +1,102 @@
 package TP_GUI_APP;
 
-import java.io.*;
-import java.io.File;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.event.ActionListener;
 import javax.swing.*;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.*;
-import javax.swing.JFileChooser;
+import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
-// Sole purpose of the class is to ask users for a file to read, load in files, add files, save files, 
-// and send it back to the main controller will also be the interpreter, converting .csv files from csv format 
-// to VaccineEntry format in a VaccineRecord object and vice versa.
+//Sole purpose of the class is to ask users for a file to read, load in files, add files, save files, 
+//and send it back to the main controller will also be the interpreter, converting .csv files from csv format 
+//to VaccineEntry format in a VaccineRecord object and vice versa.
 public class FileController extends GUIController {
-	static private final String nextLine = "\n";
-	JButton loadFileButton, saveFileButton;
-	JTextArea appLog;
+	private static final String newLine = "\n";
 	JFileChooser fileToChoose;
+	JFrame fileFrame;
+	JTextArea textAreaForFile;
+	JButton loadFileButton, saveFileButton;
 	
-	public FileController() {
-		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setCurrentDirectory(new File(System.getProperty("C:\\Users")));
-		int result = fileChooser.showOpenDialog(fileFrame);
-		if (result == JFileChooser.APPROVE_OPTION) {
-			selectedFile = fileChooser.getSelectedFile();
-			System.out.println("Selected file: " + selectedFile.getAbsolutePath());
-		}
-	}
-	
-	public void createScrollPaneWindow() {
-		// Display the window.
-		// The following creates the text area, generates the scroll pane's client, 
-		// and adds the scroll pane to a container 
-		  
-		//In a container that uses a BorderLayout:
-		textAreaForFile = new JTextArea(5, 30);
-
-		fileScrollPane = new JScrollPane(textAreaForFile);
-		//setPreferredSize(new Dimension(450, 110));
-		//add(scrollPane, BorderLayout.CENTER);
+	public FileController() 
+	{
+		textAreaForFile = new JTextArea(5,20);
+		textAreaForFile.setMargin(new Insets(5,5,5,5));
+        textAreaForFile.setEditable(false);
+        JScrollPane fileScrollPane = new JScrollPane(textAreaForFile);
+		fileToChoose = new JFileChooser();
+		fileToChoose.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		fileToChoose.setCurrentDirectory(new File(System.getProperty("C:\\Users")));
 		
-		// Create and set up a window to allow the user and admin to scroll up and down and side to side
-		// to view the vaccination data from the CSV file
-        fileFrame.setSize(200, 200);
-        fileFrame.setVisible(true);
-        fileFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
- 
-        // set flow layout for the frame
-        fileFrame.getContentPane().setLayout(new FlowLayout());
- 
-        //textArea = new JTextArea(50, 50);
-        //scrollableTextArea = new JScrollPane(textArea);
- 
-        //scrollableTextArea.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        //scrollableTextArea.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
- 
-        //frame.getContentPane().add(scrollableTextArea);
+		//For layout purposes, put the buttons in a separate panel to show only file handling
+        JPanel filePanel = new JPanel(); //uses FlowLayout
+        filePanel.add(loadFileButton);
+        filePanel.add(saveFileButton);
+
+        //Add the load file and save file buttons and the textAreaForFile to the file panel 
+        // for choosing to open the CSV file or save the CSV file
+        fileFrame.add(filePanel, BorderLayout.PAGE_START);
+        fileFrame.add(fileScrollPane, BorderLayout.CENTER);
+        
+        loadFileButton.addActionListener(new ActionListener() 
+        {
+			public void actionPerformed(ActionEvent loadArg) 
+			{
+				String newline = "\n";
+				//Handle open button action.
+		        if (loadArg.getSource() == loadFileButton) 
+		        {
+		            int returnVal1 = fileToChoose.showOpenDialog(fileToChoose);
+
+		            if (returnVal1 == JFileChooser.APPROVE_OPTION) 
+		            {
+		            	fileToChoose.getSelectedFile();
+		            }
+		                //This is where a GUI application would open the CSV file
+		            	textAreaForFile.append("Opening: " + fileToChoose.getName() + "." + newLine );
+		            } 
+		        
+		        	else 	textAreaForFile.append("Open command cancelled by user." + newLine);
+		            
+		        textAreaForFile.setCaretPosition(textAreaForFile.getDocument().getLength());
+		        } 
+        	
+        });
+        
+        saveFileButton.addActionListener(new ActionListener() 
+        {
+        	public void actionPerformed(ActionEvent saveArg) 
+			{
+        		if (saveArg.getSource() == saveFileButton) {
+		            int returnVal2 = fileToChoose.showSaveDialog(fileToChoose);
+		            if (returnVal2 == JFileChooser.APPROVE_OPTION) 
+		            {
+		                fileToChoose.getSelectedFile();
+		                //This is where a real application would save the CSV file
+		                textAreaForFile.append("Saving: " + fileToChoose.getName() + "." + newLine);
+		            } 
+		            else 	textAreaForFile.append("Save command cancelled by user." + newLine);
+		            
+		            textAreaForFile.setCaretPosition(textAreaForFile.getDocument().getLength());
+		        }
+			}
+        });
 	}
 	
 	/*
-        Using List<String> data in the format:
-                ID number, Last Name, First Name, Vaccine Type, Date, Location
-        Create new vaccine entry and return it
-        Returns null entry if could not be created (not in the right format)
+     Using List<String> data in the format:
+             ID number, Last Name, First Name, Vaccine Type, Date, Location
+     Create new vaccine entry and return it
+     Returns null entry if could not be created (not in the right format)
 	     */
-    	public VaccineEntry buildEntry(List<String> data) {
+ 	public VaccineEntry buildEntry(List<String> data) {
 		//check to see if the current data row is valid
 		VaccineEntry newEntry = isValidEntry(data);
 		//might return null
@@ -75,12 +104,12 @@ public class FileController extends GUIController {
 		    System.out.println("Error: Entry was not able to be created...returning NULL.\n");
 		}
 		return newEntry;
-    	}
+ 	}
 	/*
-        Takes in a list of strings in the format:
-            ID number, Last Name, First Name, Vaccine Type, Date, Location
+     Takes in a list of strings in the format:
+         ID number, Last Name, First Name, Vaccine Type, Date, Location
 
-        @RETURNS VaccineEntry that is NULL if not valid or if valid then it has data from List<String>
+     @RETURNS VaccineEntry that is NULL if not valid or if valid then it has data from List<String>
 	     */
 	public VaccineEntry isValidEntry(List<String> newData) {
 		int newIDNumber = -1;
@@ -140,6 +169,7 @@ public class FileController extends GUIController {
 	// This method is for loading in (reading in) data from the CSV file
 	// Need to load all the vaccination data
 	public VaccineRecord loadVaccinationData(String csvFileName) {
+		System.out.println("Enter the CSV file to read from:");		// Ensure that it is a valid type
 		// Open the CSV file using FileReader object
 		VaccineRecord loadVacRecord = new VaccineRecord();
 		Path filePath = Paths.get(csvFileName);
@@ -183,13 +213,19 @@ public class FileController extends GUIController {
 	}
 	
 	// Method for saving vaccine data to a new CSV file
-	public VaccineRecord saveVaccinationData() {
-		//TODO
+	public VaccineRecord addVaccinationData(String csvFileName) {
+		// Still completing
+		return null;
+	}
+	
+	// Method for saving vaccine data to a new CSV file
+	public VaccineRecord saveVaccinationData(String csvFileName) {
+		// Still completing
 		return null;
 	}
 		
 	// Send back to main controller (the interpreter)
 	public void sendToMainController() {
-		//TODO
+		// Still completing
 	}	
 }
