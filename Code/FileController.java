@@ -1,4 +1,4 @@
-package TP_GUI_APP.FunctionalCode;
+package TP_GUI_APP;
 
 import java.io.*;
 import java.io.File;
@@ -134,4 +134,60 @@ public class FileController extends GUIController {
 		//return newly created entry
 		return newEntry;
 	 }
+	
+	// This method is for loading in (reading in) data from the CSV file
+	// Need to load all the vaccination data
+	public VaccineRecord loadVaccinationData(String csvFileName) {
+		// Open the CSV file using FileReader object
+		VaccineRecord loadVacRecord = new VaccineRecord();
+		Path filePath = Paths.get(csvFileName);
+		
+		// Create BufferedReader from FileReader using try and importing US_ACII as the standard character set
+		try(BufferedReader bReader = Files.newBufferedReader(filePath, StandardCharsets.US_ASCII)) {
+			// Reads the first line from the CSV file line by line
+			String csvLine = bReader.readLine();
+			
+			// This while loop allows reading through the entire CSV file until every line is read
+			while(csvLine != null) {
+				// Using the .split to load a 'String' array with attributes for vaccine data from 
+				// each line of the CSV file using a ',' as the delimiter
+				String[] vacAttributes = csvLine.split(",");
+				// Create an object for vaccine entry
+				VaccineEntry vacEntry = new VaccineEntry();
+				// Retrieve the vaccine ID number for a VaccineEntry and convert it to a String
+				int vacID = vacEntry.getIdNumber();
+				String vacIDStringForm = String.valueOf(vacID);
+				
+				vacAttributes[0] = vacIDStringForm;
+				vacAttributes[1] = vacEntry.getLastName();
+				vacAttributes[2] = vacEntry.getFirstName();
+				vacAttributes[3] = vacEntry.getType();
+				vacAttributes[4] = vacEntry.getDate();
+				vacAttributes[5] = vacEntry.getLocation();
+				
+				// Add those objects into the VaccineRecord data structure using add() method
+				loadVacRecord.addNewRow(vacEntry);
+				
+				// Now read the next line before next iteration, however, if the end of the file is
+				// reached, then the line would be null
+				csvLine = bReader.readLine();
+			}
+		}
+		catch(IOException exceptionToCheck) {
+			exceptionToCheck.printStackTrace();
+		}
+		// Return the list of vaccine records
+		return loadVacRecord;
+	}
+	
+	// Method for saving vaccine data to a new CSV file
+	public VaccineRecord saveVaccinationData() {
+		//
+		return null;
+	}
+		
+	// Send back to main controller (the interpreter)
+	public void sendToMainController() {
+		//
+	}	
 }
