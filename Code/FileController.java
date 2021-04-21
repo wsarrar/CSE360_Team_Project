@@ -10,6 +10,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.filechooser.*;
 import javax.swing.JFileChooser;
 import java.util.*;
+import java.util.List;
 
 // Sole purpose of the class is to ask users for a file to read, load in files, add files, save files, 
 // and send it back to the main controller will also be the interpreter, converting .csv files from csv format 
