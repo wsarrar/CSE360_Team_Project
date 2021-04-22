@@ -6,14 +6,12 @@ import javax.swing.*;
 import javax.swing.filechooser.*;
 import java.io.*;
 import java.io.BufferedReader;
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 //Sole purpose of the class is to ask users for a file to read, load in files, add files, save files, 
 //and send it back to the main controller will also be the interpreter, converting .csv files from csv format 
@@ -168,64 +166,60 @@ public class FileController extends GUIController {
 	
 	// This method is for loading in (reading in) data from the CSV file
 	// Need to load all the vaccination data
-	public VaccineRecord loadVaccinationData(String csvFileName) {
-		System.out.println("Enter the CSV file to read from:");		// Ensure that it is a valid type
-		// Open the CSV file using FileReader object
-		VaccineRecord loadVacRecord = new VaccineRecord();
-		Path filePath = Paths.get(csvFileName);
+	public VaccineRecord loadVaccinationData(File CSVFile) throws IOException {
+		Scanner scanInput = new Scanner(System.in);
+		System.out.println("Enter the CSV file to read from:");
+		String fileName = scanInput.nextLine();	// Assign the file from user input to a String
 		
-		// Create BufferedReader from FileReader using try and importing US_ACII as the standard character set
-		try(BufferedReader bReader = Files.newBufferedReader(filePath, StandardCharsets.US_ASCII)) {
-			// Reads the first line from the CSV file line by line
-			String csvLine = bReader.readLine();
-			
-			// This while loop allows reading through the entire CSV file until every line is read
-			while(csvLine != null) {
-				// Using the .split to load a 'String' array with attributes for vaccine data from 
-				// each line of the CSV file using a ',' as the delimiter
-				String[] vacAttributes = csvLine.split(",");
-				// Create an object for vaccine entry
-				VaccineEntry vacEntry = new VaccineEntry();
-				// Retrieve the vaccine ID number for a VaccineEntry and convert it to a String
-				int vacID = vacEntry.getIdNumber();
-				String vacIDStringForm = String.valueOf(vacID);
+		// Ensure that the file is a valid type
+		boolean fileType = fileName.endsWith(".csv");
+		if(!CSVFile.exists() && !fileType)
+			System.out.println("Invalid file, the file does not exist");
+		
+		Scanner scanFile = new Scanner(new File(fileName));
+		Scanner dataToScan = null;
+		List<VaccineEntry> vacDataList = new ArrayList<>();
+		int index = 0;
+		while(scanFile.hasNextLine()) 
+		{
+			dataToScan = new Scanner(scanFile.nextLine());
+			dataToScan.useDelimiter(",");
+			VaccineEntry vacEntry = new VaccineEntry();
+			while(dataToScan.hasNext()) 
+			{
+				String vacData = dataToScan.next();
+				if(index == 0) {
+					vacEntry.setIdNumber(Integer.parseInt(vacData));
+				}
 				
-				vacAttributes[0] = vacIDStringForm;
-				vacAttributes[1] = vacEntry.getLastName();
-				vacAttributes[2] = vacEntry.getFirstName();
-				vacAttributes[3] = vacEntry.getType();
-				vacAttributes[4] = vacEntry.getDate();
-				vacAttributes[5] = vacEntry.getLocation();
+				else if(index == 1) {
+					vacEntry.setLastName(vacData);
+				}
 				
-				// Add those objects into the VaccineRecord data structure using add() method
-				loadVacRecord.addNewRow(vacEntry);
+				else if(index == 2) {}
 				
-				// Now read the next line before next iteration, however, if the end of the file is
-				// reached, then the line would be null
-				csvLine = bReader.readLine();
+				else if(index == 3) {}
+				
+				else if(index == 4) {}
+				
+				else if(index == 5) {}
+				
+				else	System.out.println("Invalid Vaccine Data" + vacEntry); 
 			}
 		}
-		catch(IOException exceptionToCheck) {
-			exceptionToCheck.printStackTrace();
-		}
+		VaccineRecord loadVacRecord = new VaccineRecord();	// Initialize a new vaccine record for loading data
 		// Return the list of vaccine records
 		return loadVacRecord;
 	}
 	
 	// Method for saving vaccine data to a new CSV file
-	public VaccineRecord addVaccinationData(String csvFileName) {
-		// Still completing
-		return null;
-	}
-	
-	// Method for saving vaccine data to a new CSV file
 	public VaccineRecord saveVaccinationData(String csvFileName) {
-		// Still completing
+		//
 		return null;
 	}
 		
 	// Send back to main controller (the interpreter)
 	public void sendToMainController() {
-		// Still completing
+		//
 	}	
 }
