@@ -1,10 +1,12 @@
-package TP_GUI_APP;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,76 +21,6 @@ public class FileController extends GUIController {
 	JFrame fileFrame;
 	JTextArea textAreaForFile;
 	JButton loadFileButton, saveFileButton;
-	
-	public FileController() 
-	{
-		textAreaForFile = new JTextArea(5,20);
-		textAreaForFile.setMargin(new Insets(5,5,5,5));
-        textAreaForFile.setEditable(false);
-        JScrollPane fileScrollPane = new JScrollPane(textAreaForFile);
-        //For layout purposes, put the buttons in a separate panel to show only file handling
-        JPanel filePanel = new JPanel(); //uses FlowLayout
-        filePanel.add(loadFileButton);
-        filePanel.add(saveFileButton);
-
-        //Add the load file and save file buttons and the textAreaForFile to the file panel 
-        // for choosing to open the CSV file or save the CSV file
-        fileFrame.add(filePanel, BorderLayout.PAGE_START);
-        fileFrame.add(fileScrollPane, BorderLayout.CENTER);
-        
-        loadFileButton.addActionListener(new ActionListener() 
-        {
-			public void actionPerformed(ActionEvent loadArg) 
-			{
-				String newline = "\n";
-				//Handle open button action.
-		        if (loadArg.getSource() == loadFileButton) 
-		        {
-		            int returnVal1 = fileToChoose.showOpenDialog(fileToChoose);
-
-		            if (returnVal1 == JFileChooser.APPROVE_OPTION) 
-		            {
-		            	fileToChoose.getSelectedFile();
-		            }
-		                //This is where a GUI application would open the CSV file
-		            	textAreaForFile.append("Opening: " + fileToChoose.getName() + "." + newLine );
-		            } 
-		        
-		        	else 	textAreaForFile.append("Open command cancelled by user." + newLine);
-		            
-		        textAreaForFile.setCaretPosition(textAreaForFile.getDocument().getLength());
-		        } 
-        	
-        });
-        
-        saveFileButton.addActionListener(new ActionListener() 
-        {
-        	public void actionPerformed(ActionEvent saveArg) 
-			{
-        		if (saveArg.getSource() == saveFileButton) {
-		            int returnVal2 = fileToChoose.showSaveDialog(fileToChoose);
-		            if (returnVal2 == JFileChooser.APPROVE_OPTION) 
-		            {
-		                fileToChoose.getSelectedFile();
-		                //This is where a real application would save the CSV file
-		                textAreaForFile.append("Saving: " + fileToChoose.getName() + "." + newLine);
-		            } 
-		            else 	textAreaForFile.append("Save command cancelled by user." + newLine);
-		            
-		            textAreaForFile.setCaretPosition(textAreaForFile.getDocument().getLength());
-		        }
-			}
-        });
-        
-		fileToChoose = new JFileChooser();
-		fileToChoose.setCurrentDirectory(new File(System.getProperty("C:\\Users")));
-		int result = fileToChoose.showOpenDialog(fileFrame);
-		if (result == JFileChooser.APPROVE_OPTION) {
-		    File selectedFile = fileToChoose.getSelectedFile();
-		    System.out.println("Selected file: " + selectedFile.getAbsolutePath());
-		}
-	}
-	
 	/*
      Using List<String> data in the format:
              ID number, Last Name, First Name, Vaccine Type, Date, Location
@@ -107,7 +39,6 @@ public class FileController extends GUIController {
 	/*
      Takes in a list of strings in the format:
          ID number, Last Name, First Name, Vaccine Type, Date, Location
-
      @RETURNS VaccineEntry that is NULL if not valid or if valid then it has data from List<String>
 	     */
 	public VaccineEntry isValidEntry(List<String> newData) {
@@ -167,7 +98,7 @@ public class FileController extends GUIController {
 	
 	// This method is for loading in (reading in) data from the CSV file
 	// Need to load all the vaccination data
-	public VaccineRecord loadVaccinationData(File CSVFile) {
+	public VaccineRecord loadVaccinationData(File CSVFile) throws IOException {
 		Scanner scanInput = new Scanner(System.in);
 		System.out.println("Enter the CSV file to read from:");
 		String fileName = scanInput.nextLine();	// Assign the file from user input to a String
@@ -177,16 +108,9 @@ public class FileController extends GUIController {
 		if(!CSVFile.exists() && !fileType)
 			System.out.println("Invalid file, the file does not exist");
 		
-		Scanner scanFile = null;
-		try {
-			scanFile = new Scanner(new File(fileName));
-		} 
-		catch (FileNotFoundException fileException) {
-			fileException.printStackTrace();
-		}
+		Scanner scanFile = new Scanner(new File(fileName));
 		Scanner dataToScan = null;
-		
-		VaccineRecord loadVacRecord = new VaccineRecord();	// Initialize a new vaccine record for loading data
+		List<VaccineEntry> vacDataList = new ArrayList<>();
 		int index = 0;
 		while(scanFile.hasNextLine()) 
 		{
@@ -204,68 +128,55 @@ public class FileController extends GUIController {
 					vacEntry.setLastName(vacData);
 				}
 				
-				else if(index == 2) {
-					vacEntry.setFirstName(vacData);
-				}
+				else if(index == 2) {}
 				
-				else if(index == 3) {
-					vacEntry.setType(vacData);
-				}
+				else if(index == 3) {}
 				
-				else if(index == 4) {
-					vacEntry.setDate(vacData);
-				}
+				else if(index == 4) {}
 				
-				else if(index == 5) {
-					vacEntry.setLocation(vacData);
-				}
+				else if(index == 5) {}
 				
-				else	System.out.println("Invalid Vaccine Data" + vacEntry);
-				index++;
+				else	System.out.println("Invalid Vaccine Data" + vacEntry); 
 			}
-			loadVacRecord.getRow(index);
-			loadVacRecord.addNewRow(vacEntry);	
 		}
-		scanFile.close();
-		loadVacRecord.getRecord();
+		VaccineRecord loadVacRecord = new VaccineRecord();	// Initialize a new vaccine record for loading data
 		// Return the list of vaccine records
 		return loadVacRecord;
 	}
-	public VaccineRecord saveVaccinationData(ArrayList<VaccineEntry> data, String csvFilePath) {
-		try
-		{
-			String[] cats = {"ID", "Last Name", "First Name", "Vaccine Type", "Date", "Location"}; 
-			
-			File csvFile = new File(csvFilePath);
-			FileWriter writer = new FileWriter(csvFile);
-			
-			writer.write(cats[0]);
-			writer.write(",");
-			writer.write(cats[1]);
-			writer.write(",");
-			writer.write(cats[2]);
-			writer.write(",");
-			writer.write(cats[3]);
-			writer.write(",");
-			writer.write(cats[4]);
-			writer.write(",");
-			writer.write(cats[5]);
-			
-			for (int i = 0; i < data.size(); i++)
-			{
-				writer.write("\n");
-				writer.write(data.get(i).toString());
-			}
-			
-			writer.flush();
-			writer.close();
-		}
-		catch(IOException e)
-		{
-			System.out.println(e);
-		}
+	
+	// Method for saving vaccine data to a new CSV file
+    public void saveVaccinationData(VaccineRecord data) {
+        try
+        {
+            //doesn't matter the csv file so save it to a csvOutput.csv file
+            BufferedWriter csvWriter = Files.newBufferedWriter(Paths.get("csvOutput.csv"));
+
+            //add all of the sections to the csv file
+            csvWriter.write("ID, Last Name, First Name, Vaccine Type, Date, Location");
+            csvWriter.newLine();
+
+            List<String> rowData = data.getRecord().toString();
+            for(int i = 0; i < data.size(); i++) {
+                List<String> record = Arrays.asList(data.getRow(i)); //might need to manually make a list by getting all objects
+                    list.add(data.getRow(i).getFirstName());
+		    list.add(data.getRow(i).getLastName());
+		    list.add(data.getRow(i).getIdNumber());
+		    list.add(data.getRow(i).getType());
+		    list.add(data.getRow(i).getDate());
+		    list.add(data.getRow(i).getLocation());                 
+                csvWriter.write(String.join(",",record));
+                csvWriter.newLine();
+            }
+            csvWriter.close();
+        }
+        catch(IOException e)
+        {
+            System.out.println(e);
+        }
+    }
 		
-		
-		return null;
-	}
+	// Send back to main controller (the interpreter)
+	public void sendToMainController() {
+		//
+	}	
 }
