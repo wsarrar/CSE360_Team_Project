@@ -231,4 +231,41 @@ public class FileController extends GUIController {
 		// Return the list of vaccine records
 		return loadVacRecord;
 	}
+	public VaccineRecord saveVaccinationData(ArrayList<VaccineEntry> data, String csvFilePath) {
+		try
+		{
+			String[] cats = {"ID", "Last Name", "First Name", "Vaccine Type", "Date", "Location"}; 
+			
+			File csvFile = new File(csvFilePath);
+			FileWriter writer = new FileWriter(csvFile);
+			
+			writer.write(cats[0]);
+			writer.write(",");
+			writer.write(cats[1]);
+			writer.write(",");
+			writer.write(cats[2]);
+			writer.write(",");
+			writer.write(cats[3]);
+			writer.write(",");
+			writer.write(cats[4]);
+			writer.write(",");
+			writer.write(cats[5]);
+			
+			for (int i = 0; i < data.size(); i++)
+			{
+				writer.write("\n");
+				writer.write(data.get(i).toString());
+			}
+			
+			writer.flush();
+			writer.close();
+		}
+		catch(IOException e)
+		{
+			System.out.println(e);
+		}
+		
+		
+		return null;
+	}
 }
