@@ -227,9 +227,4 @@ public class FileController extends GUIController {
 		// Return the list of vaccine records
 		return loadVacRecord;
 	}
-		
-	// Send back to main controller (the interpreter)
-	public void sendToMainController() {
-		//TODO
-	}	
 }
