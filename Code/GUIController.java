@@ -170,6 +170,37 @@ public class GUIController {
 			}
 		});
 		
+	save.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{	
+				panel.remove(layout.getLayoutComponent(BorderLayout.CENTER));
+				JFileChooser jfc = new JFileChooser();
+	                	int opened = jfc.showSaveDialog(null);
+	               		if (opened == JFileChooser.APPROVE_OPTION) {
+	                    		File file = jfc.getSelectedFile();
+	                    		filepath = file.getPath();
+				
+					Object[][] toSave = getData(table);
+                			ArrayList<VaccineEntry> veList = new ArrayList<VaccineEntry>();
+
+                			for (int i = 0; i < toSave.length; i++) {
+                				VaccineEntry ve = new VaccineEntry();
+                				ve.setIdNumber((int)toSave[i][0]);
+                				ve.setLastName((String)toSave[i][1]);
+                				ve.setFirstName((String)toSave[i][2]);
+                				ve.setType((String)toSave[i][3]);
+                				ve.setDate((String)toSave[i][4]);
+                				ve.setLocation((String)toSave[i][5]);
+                
+                				veList.add(ve);
+                			}
+                			FileController fc = new FileController();
+                			fc.saveVaccinationData(veList, filepath);
+	            		}
+            		}
+		});
+		
         //Make the Pie Chart
 		visPie.addActionListener(new ActionListener()
 		{
