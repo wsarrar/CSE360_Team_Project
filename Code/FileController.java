@@ -29,11 +29,7 @@ public class FileController extends GUIController {
 		textAreaForFile.setMargin(new Insets(5,5,5,5));
         textAreaForFile.setEditable(false);
         JScrollPane fileScrollPane = new JScrollPane(textAreaForFile);
-		fileToChoose = new JFileChooser();
-		fileToChoose.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		fileToChoose.setCurrentDirectory(new File(System.getProperty("C:\\Users")));
-		
-		//For layout purposes, put the buttons in a separate panel to show only file handling
+        //For layout purposes, put the buttons in a separate panel to show only file handling
         JPanel filePanel = new JPanel(); //uses FlowLayout
         filePanel.add(loadFileButton);
         filePanel.add(saveFileButton);
@@ -86,6 +82,14 @@ public class FileController extends GUIController {
 		        }
 			}
         });
+        
+		fileToChoose = new JFileChooser();
+		fileToChoose.setCurrentDirectory(new File(System.getProperty("C:\\Users")));
+		int result = fileToChoose.showOpenDialog(fileFrame);
+		if (result == JFileChooser.APPROVE_OPTION) {
+		    File selectedFile = fileToChoose.getSelectedFile();
+		    System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+		}
 	}
 	
 	/*
@@ -223,15 +227,9 @@ public class FileController extends GUIController {
 		// Return the list of vaccine records
 		return loadVacRecord;
 	}
-	
-	// Method for saving vaccine data to a new CSV file
-	public VaccineRecord saveVaccinationData(File csvFileToSave) {
-		//
-		return null;
-	}
 		
 	// Send back to main controller (the interpreter)
 	public void sendToMainController() {
-		//
+		//TODO
 	}	
 }
