@@ -5,9 +5,6 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 import java.io.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -170,7 +167,7 @@ public class FileController extends GUIController {
 	
 	// This method is for loading in (reading in) data from the CSV file
 	// Need to load all the vaccination data
-	public VaccineRecord loadVaccinationData(File CSVFile) throws IOException {
+	public VaccineRecord loadVaccinationData(File CSVFile) {
 		Scanner scanInput = new Scanner(System.in);
 		System.out.println("Enter the CSV file to read from:");
 		String fileName = scanInput.nextLine();	// Assign the file from user input to a String
@@ -180,7 +177,13 @@ public class FileController extends GUIController {
 		if(!CSVFile.exists() && !fileType)
 			System.out.println("Invalid file, the file does not exist");
 		
-		Scanner scanFile = new Scanner(new File(fileName));
+		Scanner scanFile = null;
+		try {
+			scanFile = new Scanner(new File(fileName));
+		} 
+		catch (FileNotFoundException fileException) {
+			fileException.printStackTrace();
+		}
 		Scanner dataToScan = null;
 		
 		VaccineRecord loadVacRecord = new VaccineRecord();	// Initialize a new vaccine record for loading data
@@ -223,6 +226,7 @@ public class FileController extends GUIController {
 			loadVacRecord.getRow(index);
 			loadVacRecord.addNewRow(vacEntry);	
 		}
+		scanFile.close();
 		loadVacRecord.getRecord();
 		// Return the list of vaccine records
 		return loadVacRecord;
