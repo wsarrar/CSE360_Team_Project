@@ -178,7 +178,8 @@ public class FileController extends GUIController {
 		
 		Scanner scanFile = new Scanner(new File(fileName));
 		Scanner dataToScan = null;
-		List<VaccineEntry> vacDataList = new ArrayList<>();
+		
+		VaccineRecord loadVacRecord = new VaccineRecord();	// Initialize a new vaccine record for loading data
 		int index = 0;
 		while(scanFile.hasNextLine()) 
 		{
@@ -196,24 +197,35 @@ public class FileController extends GUIController {
 					vacEntry.setLastName(vacData);
 				}
 				
-				else if(index == 2) {}
+				else if(index == 2) {
+					vacEntry.setFirstName(vacData);
+				}
 				
-				else if(index == 3) {}
+				else if(index == 3) {
+					vacEntry.setType(vacData);
+				}
 				
-				else if(index == 4) {}
+				else if(index == 4) {
+					vacEntry.setDate(vacData);
+				}
 				
-				else if(index == 5) {}
+				else if(index == 5) {
+					vacEntry.setLocation(vacData);
+				}
 				
-				else	System.out.println("Invalid Vaccine Data" + vacEntry); 
+				else	System.out.println("Invalid Vaccine Data" + vacEntry);
+				index++;
 			}
+			loadVacRecord.getRow(index);
+			loadVacRecord.addNewRow(vacEntry);	
 		}
-		VaccineRecord loadVacRecord = new VaccineRecord();	// Initialize a new vaccine record for loading data
+		loadVacRecord.getRecord();
 		// Return the list of vaccine records
 		return loadVacRecord;
 	}
 	
 	// Method for saving vaccine data to a new CSV file
-	public VaccineRecord saveVaccinationData(String csvFileName) {
+	public VaccineRecord saveVaccinationData(File csvFileToSave) {
 		//
 		return null;
 	}
